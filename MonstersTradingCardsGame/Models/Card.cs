@@ -13,12 +13,11 @@ namespace MonsterTradingCardsGame.Models
     {
         // Unique identifier for each card
         public Guid Id { get; set; }
-
-        // Name of the card
         public string Name { get; set; }
-
-        // Damage value of the card
         public double Damage { get; set; }
+
+        // Any common properties or methods for all types of cards can be added here
+
     }
 }
 

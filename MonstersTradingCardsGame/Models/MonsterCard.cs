@@ -14,6 +14,7 @@ namespace MonsterTradingCardsGame.Models
         // Constructor for creating a MonsterCard with specific attributes
         public MonsterCard(string name, double damage, string monsterType, string specialAbility)
         {
+            Id = Guid.NewGuid();
             // Set common properties from the base class
             Name = name;
             Damage = damage;
