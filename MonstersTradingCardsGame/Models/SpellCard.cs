@@ -19,7 +19,8 @@ namespace MonsterTradingCardsGame.Models
             switch (Element.ToLower())
             {
                 case "water":
-                    effectiveness = targetElement.ToLower() == "fire" ? 2.0 : 1.0; // Water is effective against fire
+                    effectiveness = targetElement.ToLower() == "fire" ? 2.0 :  // Water is effective against fire
+                                    targetElement.ToLower() == "normal" ? 0.5 : 1.0; // Water is not effective against normal
                     break;
                 case "fire":
                     effectiveness = targetElement.ToLower() == "normal" ? 0.5 : 1.0; // Fire is not effective against normal

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using MonsterTradingCardsGame.Models;
 
 namespace MonsterTradingCardsGame.Services
@@ -35,22 +36,52 @@ namespace MonsterTradingCardsGame.Services
                     MonsterCard monsterCardB = (MonsterCard)playerBCard;
 
                     // Handle monster fights
+                    double damageA = CalculateDamage(playerACard, playerBCard);
+                    double damageB = CalculateDamage(playerBCard, playerACard);
+
                     // Implement your monster fight logic here
                     // Consider special abilities and elemental interactions
+
                     // Update player decks accordingly
+                    UpdatePlayerDecks(playerACard, playerBCard, damageA, damageB, playerADeck, playerBDeck);
                 }
                 else if (playerACard is SpellCard || playerBCard is SpellCard)
                 {
                     // Handle spell fights
+                    double damageA = CalculateDamage(playerACard, playerBCard);
+                    double damageB = CalculateDamage(playerBCard, playerACard);
+
                     // Implement your spell fight logic here
+
                     // Consider elemental interactions and update player decks accordingly
+                    UpdatePlayerDecks(playerACard, playerBCard, damageA, damageB, playerADeck, playerBDeck);
                 }
                 else
                 {
                     // Handle mixed fights (one spell card, one monster card)
+                    MonsterCard monsterCard;
+                    SpellCard spellCard;
+
+                    if (playerACard is MonsterCard)
+                    {
+                        monsterCard = (MonsterCard)playerACard;
+                        spellCard = (SpellCard)playerBCard;
+                    }
+                    else
+                    {
+                        monsterCard = (MonsterCard)playerBCard;
+                        spellCard = (SpellCard)playerACard;
+                    }
                     // Implement your mixed fight logic here
+
                     // Consider elemental interactions and special abilities
+                    ApplyMonsterSpecialAbilities(monsterCard, spellCard);
+
+                    double damageA = CalculateDamage(playerACard, playerBCard);
+                    double damageB = CalculateDamage(playerBCard, playerACard);
+
                     // Update player decks accordingly
+                    UpdatePlayerDecks(playerACard, playerBCard, damageA, damageB, playerADeck, playerBDeck);
                 }
 
                 // Check for a draw
@@ -72,6 +103,98 @@ namespace MonsterTradingCardsGame.Services
             return battleLog;
         }
 
+        // Calculate damage for a fight between two cards
+        private double CalculateDamage(Card attacker, Card defender)
+        {
+            double baseDamage = attacker.Damage;
+
+            // Check if it's a spell card fight
+            if (attacker is SpellCard && defender is SpellCard)
+            {
+                SpellCard spellAttacker = (SpellCard)attacker;
+                SpellCard spellDefender = (SpellCard)defender;
+
+                // Implement spell card effectiveness logic
+                if (IsEffective(spellAttacker.ElementType, spellDefender.ElementType))
+                {
+                    return baseDamage * 2; // Damage is doubled
+                }
+                else if (IsEffective(spellDefender.ElementType, spellAttacker.ElementType))
+                {
+                    return baseDamage / 2; // Damage is halved
+                }
+                else
+                {
+                    return baseDamage; // No effect
+                }
+            }
+
+            return baseDamage; // Default for other cases
+        }
+
+        // Check if one element type is effective against another
+        private bool IsEffective(string attackingElement, string defendingElement)
+        {
+            if ((attackingElement == "water" && defendingElement == "fire") ||
+                (attackingElement == "fire" && defendingElement == "normal") ||
+                (attackingElement == "normal" && defendingElement == "water"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Apply special abilities for monster cards during mixed fights
+        private void ApplyMonsterSpecialAbilities(MonsterCard monsterCard, SpellCard spellCard)
+        {
+            if (monsterCard.MonsterType == "Goblin" && spellCard.MonsterType == "Dragon")
+            {
+                // Goblins are too afraid of Dragons to attack
+                monsterCard.Damage = 0.0;
+            }
+            else if (monsterCard.MonsterType == "Wizard" && spellCard.MonsterType == "Ork")
+            {
+                // Wizards can control Orks, so they are not able to damage them
+                monsterCard.Damage = 0.0;
+            }
+            else if (monsterCard.MonsterType == "Knight" && spellCard.ElementType == "water")
+            {
+                // The armor of Knights is so heavy that WaterSpells make them drown instantly
+                monsterCard.Damage = 0.0;
+            }
+            else if (monsterCard.MonsterType == "Kraken" && spellCard is SpellCard)
+            {
+                // The Kraken is immune against spells
+                monsterCard.Damage = 0.0;
+            }
+            else if (monsterCard.MonsterType == "FireElf" && spellCard.MonsterType == "Dragon")
+            {
+                // The FireElves know Dragons since they were little and can evade their attacks
+                monsterCard.Damage = 0.0;
+            }
+        }
+
+        // Update player decks based on the results of a fight
+        private void UpdatePlayerDecks(Card cardA, Card cardB, double damageA, double damageB,
+            List<Card> playerADeck, List<Card> playerBDeck)
+        {
+            if (damageA > damageB)
+            {
+                playerBDeck.Remove(cardB);
+                playerADeck.Add(cardB);
+            }
+            else if (damageB > damageA)
+            {
+                playerADeck.Remove(cardA);
+                playerBDeck.Add(cardA);
+            }
+            else
+            {
+                // Draw, no action needed
+            }
+        }
+
         // Generate a battle log based on the results of the battle
         private string GenerateBattleLog(int roundCount, bool isDraw)
         {
@@ -79,7 +202,13 @@ namespace MonsterTradingCardsGame.Services
             // Include information about each round, card matchups, and the winner
             // You can use StringBuilder to construct the log efficiently
 
-            return "Battle Log"; // Replace with the actual battle log
+            StringBuilder battleLog = new StringBuilder();
+            battleLog.AppendLine($"Battle Log - Rounds: {roundCount}");
+            battleLog.AppendLine($"Draw: {isDraw}");
+
+            // Add more details to the battle log as needed
+
+            return battleLog.ToString();
         }
     }
 }
