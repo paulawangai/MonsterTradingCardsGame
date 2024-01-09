@@ -115,11 +115,11 @@ namespace MonsterTradingCardsGame.Services
                 SpellCard spellDefender = (SpellCard)defender;
 
                 // Implement spell card effectiveness logic
-                if (IsEffective(spellAttacker.ElementType, spellDefender.ElementType))
+                if (IsEffective(spellAttacker.Element, spellDefender.Element))
                 {
                     return baseDamage * 2; // Damage is doubled
                 }
-                else if (IsEffective(spellDefender.ElementType, spellAttacker.ElementType))
+                else if (IsEffective(spellDefender.Element, spellAttacker.Element))
                 {
                     return baseDamage / 2; // Damage is halved
                 }
@@ -148,17 +148,17 @@ namespace MonsterTradingCardsGame.Services
         // Apply special abilities for monster cards during mixed fights
         private void ApplyMonsterSpecialAbilities(MonsterCard monsterCard, SpellCard spellCard)
         {
-            if (monsterCard.MonsterType == "Goblin" && spellCard.MonsterType == "Dragon")
+            if (monsterCard.MonsterType == "Goblin" && spellCard is DragonCard)
             {
                 // Goblins are too afraid of Dragons to attack
                 monsterCard.Damage = 0.0;
             }
-            else if (monsterCard.MonsterType == "Wizard" && spellCard.MonsterType == "Ork")
+            else if (monsterCard.MonsterType == "Wizard" && spellCard is OrkCard)
             {
                 // Wizards can control Orks, so they are not able to damage them
                 monsterCard.Damage = 0.0;
             }
-            else if (monsterCard.MonsterType == "Knight" && spellCard.ElementType == "water")
+            else if (monsterCard.MonsterType == "Knight" && spellCard.Element == "water")
             {
                 // The armor of Knights is so heavy that WaterSpells make them drown instantly
                 monsterCard.Damage = 0.0;
@@ -168,7 +168,7 @@ namespace MonsterTradingCardsGame.Services
                 // The Kraken is immune against spells
                 monsterCard.Damage = 0.0;
             }
-            else if (monsterCard.MonsterType == "FireElf" && spellCard.MonsterType == "Dragon")
+            else if (monsterCard.MonsterType == "FireElf" && spellCard is DragonCard)
             {
                 // The FireElves know Dragons since they were little and can evade their attacks
                 monsterCard.Damage = 0.0;
